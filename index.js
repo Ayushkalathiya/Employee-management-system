@@ -4,6 +4,7 @@ const pg = require("pg");
 const nodemailer = require("nodemailer");
 const bcrypt =  require("bcrypt");
 const { Workbook } = require('exceljs');
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
@@ -11,8 +12,8 @@ const port = 3000;
 const db = new pg.Client({
     user:"postgres",
     host:"localhost",
-    database:"Employee",
-    password:"Ayush#945",
+    database:process.env.DBNAME,
+    password:process.env.DBPASS,
     port:5432,
 });
 db.connect();
@@ -151,14 +152,14 @@ async function otp(){
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "apnahotel368@gmail.com",
-            pass: "ygdv disc goyp njhf"
+            user: process.env.EMAIL,
+            pass: process.env.PASSWORD
         }
     });
     
     const mailOptions = {
-        from: "apnahotel368@gmail.com",
-        to: "ayushkalathiya50@gmail.com",
+        from: process.env.EMAIL,
+        to: process.env.RecEMAIL,
         subject: 'OTP',
         text: "Your OTP is "+ OTP
     };
@@ -251,11 +252,11 @@ app.get('/query/download', async (req, res) => {
             
             // Generate Excel file and send as a response
             res.setHeader('Content-Type', '=-0987 /vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            res.setHeader('Content-Disposition', `attachment; filename=${query}.xlsx`);
+            res.setHeader('Content-Disposition', `attachment;filename=${query}.xlsx`);
             await workbook.xlsx.write(res);
             res.end();
             res.redirect("/query");
-        } catch (error) {
+        }catch (error) {
             res.status(500).send('Internal Server Error');
         }
     }else{
